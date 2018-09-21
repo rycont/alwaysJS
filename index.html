@@ -110,7 +110,11 @@
     editor.setReadOnly(false);
     document.getElementById('editor').style.fontSize='15px';
     document.getElementById('fab').addEventListener('click', (e) => {
-        eval(editor.getValue().split('console.log').join('log'))
+        try {
+            eval(editor.getValue().split('console.log').join('log'))
+        } catch(er) {
+            log(er)
+        }
     })
     if('serviceWorker' in navigator) {
   navigator.serviceWorker
