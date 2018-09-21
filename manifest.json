@@ -1,0 +1,11 @@
+{
+    "display": "standalone",
+    "theme_color": "#6200EE",
+    "name": "always JS",
+    "icons": [{
+        "src": "http://evilbits.io/static/javascript.bcb36bfb.png",
+        "type": "image/png",
+        "sizes": "512x512"
+    }],
+    "start_url": "index.html"
+}
