@@ -29,7 +29,7 @@
             margin-top: 0px;
         }
         #console.closed {
-            margin-top: -150px;
+            margin-top: -120px;
             transition: all 500ms cubic-bezier(.17,.67,.34,1);
         }
         #console.opened {
@@ -41,8 +41,8 @@
             opacity: 1;
         }
         #fab.opened {
-            transform: scale(0);
-            opacity: 0;
+            transform: scale(0.5);
+            opacity: 0.7;
         }
         #console {
             position: fixed;
@@ -56,9 +56,11 @@
             border-top-left-radius: 20px;
         }
         #console h1 {
+            font-size: 1rem;
             margin-top: 0px;
+            vertical-align: middle;
             display: inline-block;
-            width: calc(100% - 35px);
+            width: calc(100% - 70px);
         }
         #console i {
             font-size: 2rem;
@@ -81,46 +83,64 @@
                 <span class="mdc-top-app-bar__title">Always JS</span>
             </section>
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                <a class="material-icons mdc-top-app-bar__action-item" id="save" aria-label="save" alt="save">save</a>
-              </section>
+                <a class="material-icons mdc-top-app-bar__action-item" id="beautify" alt="format_align_left">format_align_left</a>
+                <a class="material-icons mdc-top-app-bar__action-item" id="save" alt="save">save</a>
+            </section>
         </div>
     </header>
     <pre id="editor"></pre>
     <section id="console" class="closed">
-        <h1>Console</h1><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>
+        <h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>
     </section>
     <button class="mdc-fab mdc-fab--extended" id="fab">
         <span class="material-icons mdc-fab__icon">whatshot</span>
         <span class="mdc-fab__label">RUN</span>
     </button>
+    <script src="./beautify.js"></script>
     <script src="./ace-builds-master/src/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
-    let isConsoleOpened = false
-    function consoleclick() {
-        isConsoleOpened = !isConsoleOpened
-        document.getElementById('console').className = isConsoleOpened?'opened':'closed'
-        document.getElementById('fab').className = isConsoleOpened?'mdc-fab mdc-fab--extended opened':'mdc-fab mdc-fab--extended closed'
-    }
-    function log(...a) {
-        document.getElementById('console').innerHTML += `<p>${new Date()}: ${a.join('')}</p>`
-    }
-    const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/tomorrow_night");
-    editor.session.setMode("ace/mode/jsx");
-    editor.setReadOnly(false);
-    document.getElementById('editor').style.fontSize='15px';
-    document.getElementById('fab').addEventListener('click', (e) => {
-        try {
-            eval(editor.getValue().split('console.log').join('log'))
-        } catch(er) {
-            log(er)
+        let isConsoleOpened = false
+        function consoleclick() {
+            isConsoleOpened = !isConsoleOpened
+            document.getElementById('console').className = isConsoleOpened ? 'opened' : 'closed'
+            document.getElementById('fab').className = isConsoleOpened ? 'mdc-fab mdc-fab--extended opened' : 'mdc-fab mdc-fab--extended closed'
         }
-    })
-    if('serviceWorker' in navigator) {
-  navigator.serviceWorker
-           .register('/sw.js')
-           .then(function() { console.log("Service Worker Registered"); });
-}
+        function log(...a) {
+            document.getElementById('console').innerHTML += `<p>${new Date()}: ${a.join('')}</p>`
+        }
+        function delCon() {
+            document.getElementById('console').innerHTML = `<h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>`
+        }
+        const editor = ace.edit("editor");
+        editor.setTheme("ace/theme/tomorrow_night");
+        editor.session.setMode("ace/mode/jsx");
+        editor.setReadOnly(false);
+        document.getElementById('editor').style.fontSize = '15px';
+        document.getElementById('fab').addEventListener('click', (e) => {
+            try {
+                eval(editor.getValue().split('console.log').join('log'))
+            } catch (er) {
+                log(er)
+            }
+        })
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                .register('/sw.js')
+                .then(function () { console.log("Service Worker Registered"); });
+        }
+        setTimeout(() => {
+            if (localStorage.code && confirm('저장된 코드가 있습니다. 불러올까요?')) {
+                editor.setValue(localStorage.code)
+            }
+        }, 100)
+        document.getElementById('save').addEventListener('click', (e) => {
+            localStorage.setItem('code', editor.getValue())
+        })
+        document.getElementById('beautify').addEventListener('click', (e) => {
+            editor.setValue(js_beautify(editor.getValue(), {
+                jslint_happy: true
+            }))
+        })
     </script>
 </body>
 
