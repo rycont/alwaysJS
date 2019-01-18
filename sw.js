@@ -4,7 +4,6 @@ self.addEventListener('install', function(e) {
      return cache.addAll([
        './',
        './index.html',
-       './ace-builds-master/src/ace.js',
        './material-components-web.min.css',
        './icons.css',
        './icons.woff2'
