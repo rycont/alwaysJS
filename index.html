@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="material-components-web.min.css">
     <link href="icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="./vs/editor/editor.main.css">
     <link rel="manifest" href="manifest.json">
     <title>Document</title>
     <style>
@@ -91,19 +90,17 @@
     </header>
     <pre id="editor"></pre>
     <section id="console" class="closed">
-        <h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>
+        <h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up"
+            onclick="consoleclick()">keyboard_arrow_up</i>
     </section>
     <button class="mdc-fab mdc-fab--extended" id="fab">
         <span class="material-icons mdc-fab__icon">whatshot</span>
         <span class="mdc-fab__label">RUN</span>
     </button>
     <script src="./beautify.js"></script>
-    <script src="./vs/loader.js"></script>
-    <script src="./vs/editor/editor.main.nls.ko.js"></script>
-    <script src="./vs/editor/editor.main.js"></script>
+    <script src="./ace-builds-master/src/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
         let isConsoleOpened = false
-        let editor
         function consoleclick() {
             isConsoleOpened = !isConsoleOpened
             document.getElementById('console').className = isConsoleOpened ? 'opened' : 'closed'
@@ -115,6 +112,17 @@
         function delCon() {
             document.getElementById('console').innerHTML = `<h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>`
         }
+        const editor = ace.edit("editor");
+        editor.setTheme("ace/theme/tomorrow_night");
+        editor.session.setMode("ace/mode/jsx");
+        editor.setReadOnly(false);
+        ace.require('./ext-language_tools.js')
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: false
+        })
+        document.getElementById('editor').style.fontSize = '15px';
         document.getElementById('fab').addEventListener('click', (e) => {
             try {
                 eval(editor.getValue().split('console.log').join('log'))
@@ -127,6 +135,12 @@
                 .register('/sw.js')
                 .then(function () { console.log("Service Worker Registered"); });
         }
+        setTimeout(() => {
+            if (localStorage.code && confirm('저장된 코드가 있습니다. 불러올까요?')) {
+                editor.setValue(localStorage.code)
+
+            }
+        }, 100)
         document.getElementById('save').addEventListener('click', (e) => {
             localStorage.setItem('code', editor.getValue())
         })
@@ -135,22 +149,6 @@
                 jslint_happy: true
             }))
         })
-        const untilGetMonacoEditorTimer = setInterval(() => {
-            if(window.monaco) {
-                editor = monaco.editor.create(document.getElementById('editor'), {
-                    theme: 'vs-dark',
-                    language: 'typescript',
-                    value: "function hello() {\n\talert('Hello world!');\n}",
-                })
-                console.log('successfuly loaded monaco!')/*
-                if (localStorage.code && confirm('저장된 코드가 있습니다. 불러올까요?')) {
-                    editor.setValue(localStorage.code)
-                }*/
-                clearInterval(untilGetMonacoEditorTimer)
-            } else {
-                console.warn('tried to load monaco but failed! trying again')
-            }
-        }, 1)
     </script>
 </body>
 
