@@ -99,6 +99,7 @@
     </button>
     <script src="./beautify.js"></script>
     <script src="./ace-builds-master/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="./ace-builds-master/src/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
     <script>
         let isConsoleOpened = false
         function consoleclick() {
@@ -112,11 +113,11 @@
         function delCon() {
             document.getElementById('console').innerHTML = `<h1 id="del">Console</h1><i class="material-icons delete_sweep" onclick="delCon()">delete_sweep</i><i class="material-icons up" onclick="consoleclick()">keyboard_arrow_up</i>`
         }
+        ace.require('ace-builds-master/src/ext-language_tools.js')
         const editor = ace.edit("editor");
         editor.setTheme("ace/theme/tomorrow_night");
         editor.session.setMode("ace/mode/jsx");
         editor.setReadOnly(false);
-        ace.require('./ext-language_tools.js')
         editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
